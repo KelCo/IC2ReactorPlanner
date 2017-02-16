@@ -1,5 +1,27 @@
 h1
 {
   text-align: center;
-  padding-top: 2pt;
+  padding-top: 2px;
+}
+table
+{
+
+  border: 1px solid orange;
+  height:80%;
+
+}
+
+td
+{
+
+  border:1px solid black;
+
+}
+
+div
+{
+
+  min-width: 64px;
+  min-height: 64px;
+
 }
