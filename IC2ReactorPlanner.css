@@ -6,15 +6,7 @@ h1
 table
 {
 
-  border: 1px solid orange;
-  height:80%;
-
-}
-
-table
-{
-
-  border: 1px solid orange;
+  border: 10px solid orange;
   height:80%;
 
 }
@@ -26,10 +18,28 @@ td
 
 }
 
+th
+{
+  text-align: center;
+  font-size: 24pt;
+}
+
 div
 {
 
   min-width: 64px;
   min-height: 64px;
 
+}
+
+#grid
+{
+  float: left;
+  margin-left: 25px;
+}
+
+#assets
+{
+  float: right;
+  margin-right: 25px;
 }
