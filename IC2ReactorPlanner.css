@@ -1,6 +1,15 @@
+h1
+{
+  text-align: center;
+  padding-top: 2px;
+}
+table
+{
 
+  border: 1px solid orange;
+  height:80%;
 
-/* TODO: */
+}
 
 table
 {
