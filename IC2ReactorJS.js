@@ -1,5 +1,4 @@
 
-
 /*
   ReactorGrid class:
     stores reactor grid info into one structure
@@ -57,7 +56,7 @@ class ReactorGrid
 
       WIP: Current info
         part type - part
-        
+
 
 */
 class Slot
