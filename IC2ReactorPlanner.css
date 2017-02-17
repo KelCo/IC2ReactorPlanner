@@ -9,18 +9,12 @@ table
 {
 
   border: 10px solid orange;
-  border-collapse: separate;
+  border-collapse: collapse;
   padding: 0.25em;
   height:80%;
 
 }
 
-td
-{
-
-  border:1px solid black;
-
-}
 
 th
 {
@@ -31,6 +25,7 @@ th
 div
 {
 
+  border:1px solid black;
   min-width: 64px;
   min-height: 64px;
 

@@ -1,11 +1,5 @@
 /*jshint esversion: 6 */
-/*
 
-  OMKAR NOTES
-    jshint esversion: 6
-
-
-*/
 
 /*
   ReactorGrid class:
@@ -19,7 +13,7 @@ class ReactorGrid
 {
 
   constructor(a, b, c, d, e, f)
-
+  {
 
     this.a = a;
     this.b = b;
@@ -70,10 +64,11 @@ class ReactorGrid
 class Slot
 {
 
-  constructor(part)
+  constructor(part, loc)
   {
 
     this.part = part;
+    this.loc = loc;
 
   }
 
@@ -81,53 +76,74 @@ class Slot
 
 class Selectors
 {
-
   constructor()
   {
-    this.blank = getId("blank");
-    this.singleU = getId("singleU");
-    this.dualU = getId("dualU");
-    this.quadU = getId("quadU");
-    this.singleMOX = getId("singleMOX");
-    this.dualMOX = getId("dualMOX");
-    this.quadMOX = getId("quadMOX");
-    this.weakReflect = getId("weakReflect");
-    this.reflect = getId("reflect");
-    this.vent = getId("vent");
-    this.diaVent = getId("diaVent");
-    this.coreVent = getId("coreVent");
-    this.spreadVent = getId("spreadVent");
-    this.goldVent = getId("goldVent");
-    this.singleWater = getId("singleWater");
-    this.dualWater = getId("dualWater");
-    this.quadWater = getId("quadWater");
-    this.heatSwitch = getId("heatSwitch");
-    this.diaSwitch = getId("diaSwitch");
-    this.coreSwitch = getId("coreSwitch");
-    this.spreadSwitch = getId("spreadSwitch");
-    this.plate = getId("plate");
-    this.heatPlate = getId("heatPlate");
-    this.xpPlate = getId("xpPlate");
-    this.cond = getId("cond");
-    this.lapCond = getId("lapCond");
-    this.singleThor = getId("singleThor");
-    this.dualThor = getId("dualThor");
-    this.quadThor = getId("quadThor");
-    this.singleHelium = getId("singleHelium");
-    this.dualHelium = getId("dualHelium");
-    this.quadHelium = getId("quadHelium");
-    this.singleNak = getId("singleNak");
-    this.dualNak = getId("dualNak");
-    this.quadNak = getId("quadNak");
-    this.unbreakReflect = getId("unbreakReflect");
     this.active = getId("blank");
+    this.id = "blank";
   }
 }
+
 
 function onLoad()
 {
 
+  var elem = document.createElement("img");
+  elem.src = "assets/blank.png";
+  elem.setAttribute("alt", "blank");
+  elem.style.padding = 0;
+  elem.style.margin = 0;
 
+
+  var i = 1;
+  var a = 1;
+  var first = a;
+
+  selectorGrid = new Selectors();
+  emptySlot = new Slot("blank");
+  row = new Row(emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot)
+  grid = new ReactorGrid(row, row, row, row, row, row);
+
+/*
+  Object.keys(grid).forEach( k =>
+  {
+    a = 1;
+
+    Object.keys(k).forEach( x =>
+    {
+
+      switch(i)
+      {
+        case 1:
+          first = "a";
+        case 2:
+          first = "b";
+        case 3:
+          first = "c";
+        case 4:
+          first = "d";
+        case 5:
+          first = "e";
+        case 6:
+          first = "f";
+      }
+
+      x.loc = "" + first + a;
+      x.part = "blank";
+      console.log(x);
+      getId("" + first + a).appendChild(elem);
+
+      a++;
+    }
+)
+    i++;
+
+  }
+);
+*/
+
+selectorGrid.active = getId("blank");
+selectorGrid.id = "blank";
+selectorGrid.active.style.border = "2px solid red";
 
 
 }
@@ -139,12 +155,241 @@ function getId(name)
 }
 
 
-
-function select()
+function select(name)
 {
 
+  selectorGrid.active.style.border = "1px solid black";
+  selectorGrid.active = getId(name);
+  selectorGrid.id = name;
+  selectorGrid.active.style.border = "1px solid red";
+
+}
 
 
+
+
+
+
+
+function setPart(slot)
+{
+
+  var l = slot.charAt(0);
+  var num = slot.charAt(1);
+  var loc = slot;
+
+  switch(l)
+  {
+    case 'a':
+    switch(num)
+    {
+      case '1':
+        slot = grid.a.one;
+        break;
+      case '2':
+        slot = grid.a.two;
+        break;
+      case '3':
+        slot = grid.a.three;
+        break;
+      case '4':
+        slot = grid.a.four;
+        break;
+      case '5':
+        slot = grid.a.five;
+        break;
+      case '6':
+        slot = grid.a.six;
+        break;
+      case '7':
+        slot = grid.a.seven;
+        break;
+      case '8':
+        slot = grid.a.eight;
+        break;
+      case '9':
+        slot = grid.a.nine;
+        break;
+      }
+      case 'b':
+      switch(num)
+      {
+        case '1':
+          slot = grid.b.one;
+          break;
+        case '2':
+          slot = grid.b.two;
+          break;
+        case '3':
+          slot = grid.b.three;
+          break;
+        case '4':
+          slot = grid.b.four;
+          break;
+        case '5':
+          slot = grid.b.five;
+          break;
+        case '6':
+          slot = grid.b.six;
+          break;
+        case '7':
+          slot = grid.b.seven;
+          break;
+        case '8':
+          slot = grid.b.eight;
+          break;
+        case '9':
+          slot = grid.b.nine;
+          break;
+      }
+    case 'c':
+      switch(num)
+      {
+        case '1':
+          slot = grid.c.one;
+          break;
+        case '2':
+          slot = grid.c.two;
+          break;
+        case '3':
+          slot = grid.c.three;
+          break;
+        case '4':
+          slot = grid.c.four;
+          break;
+        case '5':
+          slot = grid.c.five;
+          break;
+        case '6':
+          slot = grid.c.six;
+          break;
+        case '7':
+          slot = grid.c.seven;
+          break;
+        case '8':
+          slot = grid.c.eight;
+          break;
+        case '9':
+          slot = grid.c.nine;
+          break;
+      }
+      case 'd':
+      switch(num)
+      {
+        case '1':
+          slot = grid.d.one;
+          break;
+        case '2':
+          slot = grid.d.two;
+          break;
+        case '3':
+          slot = grid.d.three;
+          break;
+        case '4':
+          slot = grid.d.four;
+          break;
+        case '5':
+          slot = grid.d.five;
+          break;
+        case '6':
+          slot = grid.d.six;
+          break;
+        case '7':
+          slot = grid.d.seven;
+          break;
+        case '8':
+          slot = grid.d.eight;
+          break;
+        case '9':
+          slot = grid.d.nine;
+          break;
+        }
+        case 'e':
+        switch(num)
+        {
+          case '1':
+            slot = grid.e.one;
+            break;
+          case '2':
+            slot = grid.e.two;
+            break;
+          case '3':
+            slot = grid.e.three;
+            break;
+          case '4':
+            slot = grid.e.four;
+            break;
+          case '5':
+            slot = grid.e.five;
+            break;
+          case '6':
+            slot = grid.e.six;
+            break;
+          case '7':
+            slot = grid.e.seven;
+            break;
+          case '8':
+            slot = grid.e.eight;
+            break;
+          case '9':
+            slot = grid.e.nine;
+            break;
+          }
+          case 'f':
+          switch(num)
+          {
+            case '1':
+              slot = grid.f.one;
+              break;
+            case '2':
+              slot = grid.f.two;
+              break;
+            case '3':
+              slot = grid.f.three;
+              break;
+            case '4':
+              slot = grid.f.four;
+              break;
+            case '5':
+              slot = grid.f.five;
+              break;
+            case '6':
+              slot = grid.f.six;
+              break;
+            case '7':
+              slot = grid.f.seven;
+              break;
+            case '8':
+              slot = grid.f.eight;
+              break;
+            case '9':
+              slot = grid.f.nine;
+              break;
+            }
+          }
+
+
+
+          if(slot.part == selectorGrid.active)
+          {
+              return;
+          }
+
+          if(getId(loc).childNodes[0] != null)
+          {
+          getId(loc).removeChild(getId(loc).childNodes[0]);
+          }
+
+          var pic = "assets/" + selectorGrid.id + ".png";
+
+          var elem = document.createElement("img");
+          elem.src = pic;
+          elem.setAttribute("alt", loc);
+          elem.style.padding = 0;
+          elem.style.margin = 0;
+          getId(loc).appendChild(elem);
+
+          slot.part = loc;
 
 
 
