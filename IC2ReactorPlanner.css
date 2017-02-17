@@ -35,17 +35,38 @@ div
   min-height: 64px;
 
 }
-
+.tooltip
+{
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+.tooltip .tooltiptext
+{
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+}
+.tooltip:hover .tooltiptext
+{
+    visibility: visible;
+}
 #grid
 {
   float: left;
-  margin-left: 2%;
+  margin-left: 4%;
 }
 
 #assets
 {
   float: right;
-  margin-right: 2%;
+  margin-right: 4%;
 }
 img
 {
