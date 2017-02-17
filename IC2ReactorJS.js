@@ -1,4 +1,4 @@
-
+/*jshint esversion: 6 */
 /*
   ReactorGrid class:
     stores reactor grid info into one structure
