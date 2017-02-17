@@ -1,4 +1,6 @@
 
+
+
 /*
   ReactorGrid class:
     stores reactor grid info into one structure
@@ -11,7 +13,7 @@ class ReactorGrid
 {
 
   constructor(a, b, c, d, e, f)
-  {
+
 
     this.a = a;
     this.b = b;
@@ -68,6 +70,75 @@ class Slot
     this.part = part;
 
   }
+
+}
+
+class Selectors
+{
+
+  constructor()
+  {
+    this.blank = getId("blank");
+    this.singleU = getId("singleU");
+    this.dualU = getId("dualU");
+    this.quadU = getId("quadU");
+    this.singleMOX = getId("singleMOX");
+    this.dualMOX = getId("dualMOX");
+    this.quadMOX = getId("quadMOX");
+    this.weakReflect = getId("weakReflect");
+    this.reflect = getId("reflect");
+    this.vent = getId("vent");
+    this.diaVent = getId("diaVent");
+    this.coreVent = getId("coreVent");
+    this.spreadVent = getId("spreadVent");
+    this.goldVent = getId("goldVent");
+    this.singleWater = getId("singleWater");
+    this.dualWater = getId("dualWater");
+    this.quadWater = getId("quadWater");
+    this.heatSwitch = getId("heatSwitch");
+    this.diaSwitch = getId("diaSwitch");
+    this.coreSwitch = getId("coreSwitch");
+    this.spreadSwitch = getId("spreadSwitch");
+    this.plate = getId("plate");
+    this.heatPlate = getId("heatPlate");
+    this.xpPlate = getId("xpPlate");
+    this.cond = getId("cond");
+    this.lapCond = getId("lapCond");
+    this.singleThor = getId("singleThor");
+    this.dualThor = getId("dualThor");
+    this.quadThor = getId("quadThor");
+    this.singleHelium = getId("singleHelium");
+    this.dualHelium = getId("dualHelium");
+    this.quadHelium = getId("quadHelium");
+    this.singleNak = getId("singleNak");
+    this.dualNak = getId("dualNak");
+    this.quadNak = getId("quadNak");
+    this.unbreakReflect = getId("unbreakReflect");
+    this.active = getId("blank");
+  }
+}
+
+function onLoad()
+{
+
+
+
+
+}
+
+
+function getId(name)
+{
+  return document.getElementById(name);
+}
+
+
+
+function select()
+{
+
+
+
 
 
 
