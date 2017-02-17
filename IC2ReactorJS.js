@@ -1,5 +1,11 @@
 
+/*
 
+  OMKAR NOTES
+    jshint esversion: 6
+
+
+*/
 
 /*
   ReactorGrid class:
