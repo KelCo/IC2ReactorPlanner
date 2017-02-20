@@ -100,7 +100,7 @@ function onLoad()
 
   selectorGrid = new Selectors();
   emptySlot = new Slot("blank");
-  row = new Row(emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot)
+  row = new Row(emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot);
   grid = new ReactorGrid(row, row, row, row, row, row);
 
 /*
@@ -143,7 +143,7 @@ function onLoad()
 
 selectorGrid.active = getId("blank");
 selectorGrid.id = "blank";
-selectorGrid.active.style.border = "2px solid red";
+selectorGrid.active.style.borderColor = "red";
 
 
 }
@@ -158,10 +158,10 @@ function getId(name)
 function select(name)
 {
 
-  selectorGrid.active.style.border = "1px solid black";
+  selectorGrid.active.style.borderColor = "black";
   selectorGrid.active = getId(name);
   selectorGrid.id = name;
-  selectorGrid.active.style.border = "1px solid red";
+  selectorGrid.active.style.borderColor = "red";
 
 }
 
