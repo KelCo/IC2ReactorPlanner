@@ -100,7 +100,7 @@ function onLoad()
 
   selectorGrid = new Selectors();
   emptySlot = new Slot("blank");
-  row = new Row(emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot)
+  row = new Row(emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot);
   grid = new ReactorGrid(row, row, row, row, row, row);
 
 /*
