@@ -1,6 +1,5 @@
 /*jshint esversion: 6 */
 
-
 /*
   Slot class:
     stores info about the slot
