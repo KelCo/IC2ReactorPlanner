@@ -127,3 +127,7 @@ function setPart(slot)
           slot.part = loc;
 
 }
+function simulate()
+{
+
+}
