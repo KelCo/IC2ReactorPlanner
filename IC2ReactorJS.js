@@ -117,19 +117,19 @@ function calcHP()
     left = grid[i][c-1];
     right = grid[i][c+1];
 
-    if( up != null && up.canReflect)
+    if( up !== null && up.canReflect)
     {
       current.pulses += type;
     }
-    if( down != null && up.canReflect)
+    if( down !== null && up.canReflect)
     {
       current.pulses += type;
     }
-    if( right != null && up.canReflect)
+    if( right !== null && up.canReflect)
     {
       current.pulses += type;
     }
-    if( left != null && up.canReflect)
+    if( left !== null && up.canReflect)
     {
       current.pulses += type;
     }
@@ -203,7 +203,7 @@ function setPart(slot)
             slot.part.canReflect = true;
           }
 
-          if(getId(loc).childNodes[0] != null)
+          if(getId(loc).childNodes[0] !== null)
           {
           getId(loc).removeChild(getId(loc).childNodes[0]);
           }
