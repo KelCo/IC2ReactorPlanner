@@ -12,12 +12,12 @@
 class Slot
 {
 
-  constructor(part, loc, canReflect)
+  constructor(part, loc)
   {
 
     this.part = part;
     this.loc = loc;
-    this.canReflect = canReflect;
+    this.canReflect = false;
     this.pulses = 0;
 
   }
@@ -44,19 +44,26 @@ function onLoad()
   elem.style.margin = 0;
 
 
-  var i = 1;
-  var a = 1;
-  var first = a;
+  var i = 0;
+  var a = 0;
 
   selectorGrid = new Selectors();
-  emptySlot = new Slot("blank");
-  row = [emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot];
-  grid = [row, row, row, row, row, row];
+  grid = [1, 2, 3, 4, 5, 6];
+
+  for( i = 0; i < 6; i++ )
+  {
+    grid[i] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    for( a = 0; a < 9; a++ )
+    {
+      grid[i][a] = new Slot("blank");
+    }
+  }
+
   validReflect = ["singleU", "dualU", "quadU", "singleMOX", "dualMOX", "quadMOX", "weakReflect", "reflect", "singleThor", "dualThor", "quadThor", "unbreakReflect"];
 
-selectorGrid.active = getId("blank");
-selectorGrid.id = "blank";
-selectorGrid.active.style.borderColor = "red";
+  selectorGrid.active = getId("blank");
+  selectorGrid.id = "blank";
+  selectorGrid.active.style.borderColor = "red";
 
 
 }
@@ -78,6 +85,15 @@ function select(name)
 
 }
 
+function simulate()
+{
+
+  calcHP();
+
+
+
+}
+
 function calcHP()
 {
 
@@ -92,60 +108,87 @@ function calcHP()
     {
 
       current = grid[i][c];
+      //console.log(current);
+      if( current.canReflect && current.part !== "weakReflect" && current.part !== "reflect" && current.part !== "unbreakReflect")
+      {
 
-      if(current.canReflect)
+      switch( current.part )
       {
-      switch(current.part)
-      {
-        case "singleU" || "singleMOX" || "singleThor":
+        case "singleU": case "singleMOX": case "singleThor":
           type = 1;
           current.pulses += 1;
           break;
-        case "dualU" || "dualMOX" || "quadThor":
+        case "dualU": case "dualMOX": case "quadThor":
           type = 2;
           current.pulses += 4;
           break;
-        case "quadU" || "quadMOX" || "quadThor":
+        case "quadU": case "quadMOX": case "quadThor":
           type = 4;
           current.pulses += 12;
           break;
 
     }
 
-    up = grid[i-1][c];
-    down = grid[i+1][c];
-    left = grid[i][c-1];
-    right = grid[i][c+1];
 
-    if( up != null && up.canReflect)
+    if( i !== 0 )
     {
-      current.pulses += type;
+      up = grid[i-1][c];
     }
-    if( down != null && up.canReflect)
+    else
     {
-      current.pulses += type;
+      up = null;
     }
-    if( right != null && up.canReflect)
+    if( i !== 5 )
     {
-      current.pulses += type;
+      down = grid[i+1][c];
     }
-    if( left != null && up.canReflect)
+    else
     {
-      current.pulses += type;
+      down = null;
     }
+    if( c !== 0 )
+    {
+      left = grid[i][c-1];
+    }
+    else
+    {
+      left = null;
+    }
+    if( c !== 8 )
+    {
+      right = grid[i][c+1];
+    }
+    else
+    {
+      right = null;
+    }
+
+    if( up !== null )
+      if( up.canReflect )
+        current.pulses += type;
+    if( down !== null )
+      if( down.canReflect )
+        current.pulses += type;
+    if( right !== null )
+      if( right.canReflect )
+        current.pulses += type;
+    if( left !== null )
+      if( left.canReflect )
+        current.pulses += type;
+
 
     switch(current.part)
     {
-      case "singleU" || "dualU" || "quadU":
-        h += ((current.pulses) * ((current.pulses / type) + 1) * 2) * type;
+      case "singleU": case "dualU": case "quadU":
+        h += ((current.pulses / type) * ((current.pulses / type) + 1) * 2) * type;
         p += current.pulses * 5;
         break;
-      case "singleMOX" || "dualMOX"  || "quadMOX":
-        h += ((current.pulses) * ((current.pulses / type) + 1) * 2) * type;
+      case "singleMOX": case "dualMOX": case "quadMOX":
+        h += ((current.pulses / type) * ((current.pulses / type) + 1) * 2) * type;
         p += current.pulses * 5;
         break;
-      case "singleThor" || "dualThor" || "quadThor":
-        h += (((current.pulses) * ((current.pulses / type) + 1) * 2) * type) / 4;
+      case "singleThor": case "dualThor": case "quadThor":
+        h += (((current.pulses / type) * ((current.pulses / type) + 1) * 2) * type) / 4;
         p += current.pulses;
         break;
 
@@ -154,7 +197,11 @@ function calcHP()
     }
   }
 
+  var consoleh = getId("avgHeatOutput");
+  var consolep = getId("avgEUOutput");
 
+  consoleh.innerHTML = "Heat Generated Per Second: " + h;
+  consolep.innerHTML = "Average Power Per Tick: " + p;
 
 
 }
@@ -166,57 +213,51 @@ function setPart(slot)
 
   var l = slot.charAt(0);
   var num = parseInt(slot.charAt(1));
-  var loc = slot;
+  var place;
 
   switch(l)
   {
     case 'a':
-      slot = grid[0][num-1];
+      place = grid[0][num-1];
       break;
     case 'b':
-      slot = grid[1][num-1];
+      place = grid[1][num-1];
       break;
     case 'c':
-      slot = grid[2][num-1];
+      place = grid[2][num-1];
       break;
     case 'd':
-      slot = grid[3][num-1];
+      place = grid[3][num-1];
       break;
     case 'e':
-      slot = grid[4][num-1];
+      place = grid[4][num-1];
       break;
     case 'f':
-      slot = grid[5][num-1];
+      place = grid[5][num-1];
       break;
   }
 
 
 
 
-          if(slot.part == selectorGrid.active)
-          {
+          if( place.part == selectorGrid.id )
               return;
-          }
-
-          if( validReflect.includes(selectorGrid.id))
-          {
-            slot.part.canReflect = true;
-          }
-
-          if(getId(loc).childNodes[0] != null)
-          {
-          getId(loc).removeChild(getId(loc).childNodes[0]);
-          }
+          if( validReflect.includes(selectorGrid.id) )
+            place.canReflect = true;
+          if( !validReflect.includes(selectorGrid.id) )
+            place.canReflect = false;
+          if( getId(slot).childNodes[0] != null )
+            getId(slot).removeChild(getId(slot).childNodes[0]);
 
           var pic = "assets/" + selectorGrid.id + ".png";
 
           var elem = document.createElement("img");
           elem.src = pic;
-          elem.setAttribute("alt", loc);
+          elem.setAttribute("alt", slot);
           elem.style.padding = 0;
           elem.style.margin = 0;
-          getId(loc).appendChild(elem);
+          getId(slot).appendChild(elem);
 
-          slot.part = loc;
+          place.part = selectorGrid.id;
 
 }
