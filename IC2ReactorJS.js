@@ -13,11 +13,13 @@
 class Slot
 {
 
-  constructor(part, loc)
+  constructor(part, loc, canReflect)
   {
 
     this.part = part;
     this.loc = loc;
+    this.canReflect = canReflect;
+    this.pulses = 0;
 
   }
 
@@ -51,7 +53,7 @@ function onLoad()
   emptySlot = new Slot("blank");
   row = [emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot];
   grid = [row, row, row, row, row, row];
-
+  validReflect = ["singleU", "dualU", "quadU", "singleMOX", "dualMOX", "quadMOX", "weakReflect", "reflect", "singleThor", "dualThor", "quadThor", "unbreakReflect"];
 
 selectorGrid.active = getId("blank");
 selectorGrid.id = "blank";
@@ -76,6 +78,89 @@ function select(name)
   selectorGrid.active.style.borderColor = "red";
 
 }
+
+function calcHP()
+{
+
+  var i, c, current, down, up, left, right, type;
+  var h = 0;
+  var p = 0;
+
+  for(i = 0; i < 6; i++)
+  {
+
+    for(c = 0; c < 9; c++)
+    {
+
+      current = grid[i][c];
+
+      if(current.canReflect)
+      {
+      switch(current.part)
+      {
+        case "singleU" || "singleMOX" || "singleThor":
+          type = 1;
+          current.pulses += 1;
+          break;
+        case "dualU" || "dualMOX" || "quadThor":
+          type = 2;
+          current.pulses += 4;
+          break;
+        case "quadU" || "quadMOX" || "quadThor":
+          type = 4;
+          current.pulses += 12;
+          break;
+
+    }
+
+    up = grid[i-1][c];
+    down = grid[i+1][c];
+    left = grid[i][c-1];
+    right = grid[i][c+1];
+
+    if( up != null && up.canReflect)
+    {
+      current.pulses += type;
+    }
+    if( down != null && up.canReflect)
+    {
+      current.pulses += type;
+    }
+    if( right != null && up.canReflect)
+    {
+      current.pulses += type;
+    }
+    if( left != null && up.canReflect)
+    {
+      current.pulses += type;
+    }
+
+    switch(current.part)
+    {
+      case "singleU" || "dualU" || "quadU":
+        h += ((current.pulses) * ((current.pulses / type) + 1) * 2) * type;
+        p += current.pulses * 5;
+        break;
+      case "singleMOX" || "dualMOX"  || "quadMOX":
+        h += ((current.pulses) * ((current.pulses / type) + 1) * 2) * type;
+        p += current.pulses * 5;
+        break;
+      case "singleThor" || "dualThor" || "quadThor":
+        h += (((current.pulses) * ((current.pulses / type) + 1) * 2) * type) / 4;
+        p += current.pulses;
+        break;
+
+        }
+      }
+    }
+  }
+
+
+
+
+}
+
+
 
 function setPart(slot)
 {
@@ -106,9 +191,17 @@ function setPart(slot)
       break;
   }
 
+
+
+
           if(slot.part == selectorGrid.active)
           {
               return;
+          }
+
+          if( validReflect.includes(selectorGrid.id))
+          {
+            slot.part.canReflect = true;
           }
 
           if(getId(loc).childNodes[0] != null)
