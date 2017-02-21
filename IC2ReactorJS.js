@@ -1,5 +1,4 @@
 /*jshint esversion: 6 */
-/*Be Better than this git*/
 
 /*
   ReactorGrid class:
@@ -102,44 +101,7 @@ function onLoad()
   emptySlot = new Slot("blank");
   row = new Row(emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot);
   grid = new ReactorGrid(row, row, row, row, row, row);
-
-/*
-  Object.keys(grid).forEach( k =>
-  {
-    a = 1;
-
-    Object.keys(k).forEach( x =>
-    {
-
-      switch(i)
-      {
-        case 1:
-          first = "a";
-        case 2:
-          first = "b";
-        case 3:
-          first = "c";
-        case 4:
-          first = "d";
-        case 5:
-          first = "e";
-        case 6:
-          first = "f";
-      }
-
-      x.loc = "" + first + a;
-      x.part = "blank";
-      console.log(x);
-      getId("" + first + a).appendChild(elem);
-
-      a++;
-    }
-)
-    i++;
-
-  }
-);
-*/
+  
 
 selectorGrid.active = getId("blank");
 selectorGrid.id = "blank";
@@ -375,7 +337,7 @@ function setPart(slot)
               return;
           }
 
-          if(getId(loc).childNodes[0] != null)
+          if(getId(loc).childNodes[0] !== null)
           {
           getId(loc).removeChild(getId(loc).childNodes[0]);
           }
