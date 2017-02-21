@@ -1,57 +1,6 @@
 /*jshint esversion: 6 */
 
 /*
-  ReactorGrid class:
-    stores reactor grid info into one structure
-    for easy function passing.
-
-    Stores the rows in the reactor, each row is a Row class.
-
-*/
-class ReactorGrid
-{
-
-  constructor(a, b, c, d, e, f)
-  {
-
-    this.a = a;
-    this.b = b;
-    this.c = c;
-    this.d = d;
-    this.e = e;
-    this.f = f;
-
-  }
-
-  }
-
-  /*
-
-  Row class:
-    stores each part in an array in a row.
-    constructors are slot classes
-
-  */
-  class Row
-  {
-
-    constructor(one, two, three, four, five, six, seven, eight, nine)
-    {
-
-      this.one = one;
-      this.two = two;
-      this.three = three;
-      this.four = four;
-      this.five = five;
-      this.six = six;
-      this.seven = seven;
-      this.eight = eight;
-      this.nine = nine;
-
-    }
-  }
-
-/*
   Slot class:
     stores info about the slot
 
@@ -99,9 +48,9 @@ function onLoad()
 
   selectorGrid = new Selectors();
   emptySlot = new Slot("blank");
-  row = new Row(emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot);
-  grid = new ReactorGrid(row, row, row, row, row, row);
-  
+  row = [emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot, emptySlot];
+  grid = [row, row, row, row, row, row];
+
 
 selectorGrid.active = getId("blank");
 selectorGrid.id = "blank";
@@ -127,210 +76,34 @@ function select(name)
 
 }
 
-
-
-
-
-
-
 function setPart(slot)
 {
 
   var l = slot.charAt(0);
-  var num = slot.charAt(1);
+  var num = parseInt(slot.charAt(1));
   var loc = slot;
 
   switch(l)
   {
     case 'a':
-    switch(num)
-    {
-      case '1':
-        slot = grid.a.one;
-        break;
-      case '2':
-        slot = grid.a.two;
-        break;
-      case '3':
-        slot = grid.a.three;
-        break;
-      case '4':
-        slot = grid.a.four;
-        break;
-      case '5':
-        slot = grid.a.five;
-        break;
-      case '6':
-        slot = grid.a.six;
-        break;
-      case '7':
-        slot = grid.a.seven;
-        break;
-      case '8':
-        slot = grid.a.eight;
-        break;
-      case '9':
-        slot = grid.a.nine;
-        break;
-      }
-      case 'b':
-      switch(num)
-      {
-        case '1':
-          slot = grid.b.one;
-          break;
-        case '2':
-          slot = grid.b.two;
-          break;
-        case '3':
-          slot = grid.b.three;
-          break;
-        case '4':
-          slot = grid.b.four;
-          break;
-        case '5':
-          slot = grid.b.five;
-          break;
-        case '6':
-          slot = grid.b.six;
-          break;
-        case '7':
-          slot = grid.b.seven;
-          break;
-        case '8':
-          slot = grid.b.eight;
-          break;
-        case '9':
-          slot = grid.b.nine;
-          break;
-      }
+      slot = grid[0][num-1];
+      break;
+    case 'b':
+      slot = grid[1][num-1];
+      break;
     case 'c':
-      switch(num)
-      {
-        case '1':
-          slot = grid.c.one;
-          break;
-        case '2':
-          slot = grid.c.two;
-          break;
-        case '3':
-          slot = grid.c.three;
-          break;
-        case '4':
-          slot = grid.c.four;
-          break;
-        case '5':
-          slot = grid.c.five;
-          break;
-        case '6':
-          slot = grid.c.six;
-          break;
-        case '7':
-          slot = grid.c.seven;
-          break;
-        case '8':
-          slot = grid.c.eight;
-          break;
-        case '9':
-          slot = grid.c.nine;
-          break;
-      }
-      case 'd':
-      switch(num)
-      {
-        case '1':
-          slot = grid.d.one;
-          break;
-        case '2':
-          slot = grid.d.two;
-          break;
-        case '3':
-          slot = grid.d.three;
-          break;
-        case '4':
-          slot = grid.d.four;
-          break;
-        case '5':
-          slot = grid.d.five;
-          break;
-        case '6':
-          slot = grid.d.six;
-          break;
-        case '7':
-          slot = grid.d.seven;
-          break;
-        case '8':
-          slot = grid.d.eight;
-          break;
-        case '9':
-          slot = grid.d.nine;
-          break;
-        }
-        case 'e':
-        switch(num)
-        {
-          case '1':
-            slot = grid.e.one;
-            break;
-          case '2':
-            slot = grid.e.two;
-            break;
-          case '3':
-            slot = grid.e.three;
-            break;
-          case '4':
-            slot = grid.e.four;
-            break;
-          case '5':
-            slot = grid.e.five;
-            break;
-          case '6':
-            slot = grid.e.six;
-            break;
-          case '7':
-            slot = grid.e.seven;
-            break;
-          case '8':
-            slot = grid.e.eight;
-            break;
-          case '9':
-            slot = grid.e.nine;
-            break;
-          }
-          case 'f':
-          switch(num)
-          {
-            case '1':
-              slot = grid.f.one;
-              break;
-            case '2':
-              slot = grid.f.two;
-              break;
-            case '3':
-              slot = grid.f.three;
-              break;
-            case '4':
-              slot = grid.f.four;
-              break;
-            case '5':
-              slot = grid.f.five;
-              break;
-            case '6':
-              slot = grid.f.six;
-              break;
-            case '7':
-              slot = grid.f.seven;
-              break;
-            case '8':
-              slot = grid.f.eight;
-              break;
-            case '9':
-              slot = grid.f.nine;
-              break;
-            }
-          }
-
-
+      slot = grid[2][num-1];
+      break;
+    case 'd':
+      slot = grid[3][num-1];
+      break;
+    case 'e':
+      slot = grid[4][num-1];
+      break;
+    case 'f':
+      slot = grid[5][num-1];
+      break;
+  }
 
           if(slot.part == selectorGrid.active)
           {
@@ -352,7 +125,5 @@ function setPart(slot)
           getId(loc).appendChild(elem);
 
           slot.part = loc;
-
-
 
 }
