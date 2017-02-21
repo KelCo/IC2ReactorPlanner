@@ -246,7 +246,7 @@ function setPart(slot)
             place.canReflect = true;
           if( !validReflect.includes(selectorGrid.id) )
             place.canReflect = false;
-          if( getId(slot).childNodes[0] != null )
+          if( getId(slot).childNodes[0] !== null )
             getId(slot).removeChild(getId(slot).childNodes[0]);
 
           var pic = "assets/" + selectorGrid.id + ".png";
