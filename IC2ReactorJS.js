@@ -17,8 +17,9 @@ class Slot
     this.canReflect = false;
     this.pulses = 0;
     this.heat = 0;
-    this.dur;
+    this.dur = 0;
     this.canCool = false;
+    this.maxCooling = 0;
   }
 
 }
@@ -54,7 +55,10 @@ function onLoad()
   elem.style.padding = 0;
   elem.style.margin = 0;
 
-  up, down, left, right;
+  up = 0;
+  down = 0;
+  left = 0;
+  right = 0;
 
   var i = 0;
   var a = 0;
@@ -77,6 +81,12 @@ function onLoad()
 
   validReflect = ["singleU", "dualU", "quadU", "singleMOX", "dualMOX", "quadMOX", "weakReflect", "reflect", "singleThor", "dualThor", "quadThor", "unbreakReflect"];
   vents = ["vent", "diaVent", "coreVent", "spreadVent", "goldVent"];
+  uranium = ["singleU", "dualU", "quadU"];
+  mox = ["singleMOX", "dualMOX", "quadMOX"];
+  thorium = ["singleThor", "dualThor", "quadThor"];
+  switches = ["heatSwitch", "diaSwitch", "coreSwitch", "spreadSwitch"];
+  coolant = ["singleWater", "dualWater", "quadWater", "singleHelium", "dualHelium", "quadHelium", "singleNak", "dualNak", "quadNak"];
+  condensator = ["cond", "lapCond"];
 
   selectorGrid.active = getId("blank");
   selectorGrid.id = "blank";
@@ -242,7 +252,7 @@ function runCycle()
         if(down !== null && down.canCool)
         {
           down.heat += divHeat;
-          partHeat -= divHeat;          
+          partHeat -= divHeat;
         }
 
 
@@ -298,8 +308,8 @@ function setPartPulses(p)
       total += 1;
       break;
     case "dualU": case "dualMOX": case "quadThor":
-      total += 2;
-      p.pulses = 4;
+      type += 2;
+      total = 4;
       break;
     case "quadU": case "quadMOX": case "quadThor":
       type = 4;
@@ -333,7 +343,7 @@ function setPartPulses(p)
 function calcHP()
 {
 
-  var i, c, current, down, up, left, right, type;
+  var i, c, current, type;
   var h = 0;
   var p = 0;
 
@@ -410,10 +420,6 @@ function setPart(slot)
       place = grid[5][num-1];
       break;
   }
-
-
-
-
           if( place.part == selectorGrid.id )
               return;
           if( validReflect.includes(selectorGrid.id) )
@@ -426,8 +432,46 @@ function setPart(slot)
           {
             place.dur = 1000;
             place.canCool = true;
+            switch(selectorGrid.id)
+            {
+              case vent:
+                place.maxCooling = 6;
+                break;
+              case diaVent:
+                place.maxCooling = 12;
+                break;
+              case coreVent:
+                place.maxCooling = 5;
+                break;
+              case goldVent:
+                place.maxCooling = 20;
+                break;
+            }
           }
-
+          if(uranium.includes(selectorGrid.id))
+          {
+            place.dur = 20000;
+          }
+          if (mox.includes(selectorGrid.id))
+          {
+            place.dur = 10000;
+          }
+          if (thorium.includes(selectorGrid.id))
+          {
+            place.dur = 100000;
+          }
+          if(selectorGrid.id == "weakReflect")
+          {
+            place.dur = 20000;
+          }
+          if(selectorGrid.id == "reflect")
+          {
+            place.dur = 80000;
+          }
+          if(vents.includes(selectorGrid.id))
+          {
+            place.dur = 1000;
+          }
           var pic = "assets/" + selectorGrid.id + ".png";
 
           var elem = document.createElement("img");
@@ -439,4 +483,134 @@ function setPart(slot)
 
           place.part = selectorGrid.id;
 
+}
+function cooling()
+{
+  var i, c, current, type, heat, partHeat, leftoverHeat;
+  var coolPart;
+  while(checkFuel())
+  {
+    for(i = 0; i < 6; i++)
+    {
+      for (c = 0; c < 9; c++)
+      {
+        current = grid[i][c];
+        if(uranium.includes(current.part))
+        {
+          switch(current.part)
+          {
+            case "singleU":
+              heat = (current.pulses *(current.pulses + 1)) * 2;
+              break;
+            case "dualU":
+              heat = (((current.pulses/2)*((current.pulses/2) + 1)) * 2) * 2;
+              break;
+            case "quadU":
+              heat = (((current.pulses/4)*((current.pulses/4) + 1)) * 2) * 4;
+          }
+          getCard(i, c);
+          coolPart = findCoolPart(i, c);
+          partHeat = Math.trunc(heat/coolPart);
+          leftoverHeat = heat%coolPart;
+          spreadHeat(coolPart, heat);
+        }
+        if(mox.includes(current.part))
+        {
+          switch(current.part)
+          {
+            case "singleMOX":
+              heat = (current.pulses *(current.pulses + 1)) * 2;
+              break;
+            case "dualMOX":
+              heat = (((current.pulses/2)*((current.pulses/2) + 1)) * 2) * 2;
+              break;
+            case "quadMOX":
+              heat = (((current.pulses/4)*((current.pulses/4) + 1)) * 2) * 4;
+          }
+          getCard(i, c);
+          coolPart = findCoolPart(i, c);
+          partHeat = Math.trunc(heat/coolPart);
+          leftoverHeat = heat%coolPart;
+          spreadHeat(coolPart, heat);
+        }
+        if(thorium.includes(current.part))
+        {
+          switch(current.part)
+          {
+            case "singleThor":
+              heat = (current.pulses *(current.pulses + 1)) * 2;
+              break;
+            case "dualThor":
+              heat = (((current.pulses/2)*((current.pulses/2) + 1)) * 2) * 2;
+              break;
+            case "quadThor":
+              heat = (((current.pulses/4)*((current.pulses/4) + 1)) * 2) * 4;
+          }
+          getCard(i, c);
+          coolPart = findCoolPart(i, c);
+          partHeat = Math.trunc(heat/coolPart);
+          leftoverHeat = heat%coolPart;
+          spreadHeat(coolPart, heat);
+        }
+      }
+    }
+  }
+
+}
+function checkFuel()
+{
+  var i, c, current;
+  for(i = 0; i < 6; i++)
+  {
+    for(c = 0; c < 9; c++)
+    {
+      current = grid[i][c];
+      if(uranium.includes(current.part) || mox.includes(current.part) || thorium.includes(current.part) && current.dur > 0)
+      {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+function findCoolPart(i, c)
+{
+  coolPart = 0;
+  getCard(i, c);
+  if(up !== null)
+    if(up.canCool)
+      coolPart += 1;
+  if(down !== null)
+    if(down.canCool)
+      coolPart +=1;
+  if(left !== null)
+    if(left.canCool)
+      coolPart += 1;
+  if(right !== null)
+    if(right.canCool)
+      coolPart +=1;
+  return coolPart;
+}
+function spreadHeat(coolPart, heat)
+{
+  if(up !== null)
+    if(up.canCool)
+      up.dur -= partHeat;
+  if(down !== null)
+    if(down.canCool)
+      down.dur -= partHeat;
+  if(left !== null)
+    if(left.canCool)
+      left.dur -= partHeat;
+  if(right !== null)
+    if(right.canCool)
+      right.dur -= partHeat;
+  if(down !== null)
+    if(down.canCool)
+      down.dur -= leftoverHeat;
+        if(up !== null)
+          if(up.canCool)
+            up.dur -= leftoverHeat;
+  if(coolPart === 0)
+    reactor.currentHeat += heat;
 }
