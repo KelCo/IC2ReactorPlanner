@@ -16,7 +16,9 @@ class Slot
     this.loc = loc;
     this.canReflect = false;
     this.pulses = 0;
-
+    this.heat = 0;
+    this.dur;
+    this.canCool = false;
   }
 
 }
@@ -30,6 +32,18 @@ class Selectors
   }
 }
 
+class Reactor
+{
+
+  constructor()
+  {
+    this.maxHeat = 10000;
+    this.currentHeat = 0;
+  }
+
+}
+
+
 
 function onLoad()
 {
@@ -40,9 +54,11 @@ function onLoad()
   elem.style.padding = 0;
   elem.style.margin = 0;
 
+  up, down, left, right;
 
   var i = 0;
   var a = 0;
+  var loca;
 
   selectorGrid = new Selectors();
   grid = [1, 2, 3, 4, 5, 6];
@@ -52,11 +68,15 @@ function onLoad()
     grid[i] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
     for( a = 0; a < 9; a++ )
     {
-      grid[i][a] = new Slot("blank");
+      loca = "" + i + a;
+      grid[i][a] = new Slot("blank", loca);
     }
   }
 
+  reactor = new Reactor();
+
   validReflect = ["singleU", "dualU", "quadU", "singleMOX", "dualMOX", "quadMOX", "weakReflect", "reflect", "singleThor", "dualThor", "quadThor", "unbreakReflect"];
+  vents = ["vent", "diaVent", "coreVent", "spreadVent", "goldVent"];
 
   selectorGrid.active = getId("blank");
   selectorGrid.id = "blank";
@@ -82,14 +102,233 @@ function select(name)
 
 }
 
-function simulate()
+function calcMaxHeat()
 {
 
-  calcHP();
+  var i = 0;
+  var c = 0;
+  var total = 10000;
+
+  for( i = 0; i < 6; i++ )
+  {
+    for( c = 0; c < 9; c++ )
+    {
+      current = grid[i][c];
+      switch(current.part)
+      {
+        case "plate":
+          total += 1000;
+          break;
+        case "heatPlate":
+          total += 1700;
+          break;
+        case "xpPlate":
+          total += 500;
+          break;
+      }
+    }
+  }
+
+  reactor.maxHeat = total;
+  var out = getId("maxTemp");
+  out.innerHTML = "Max Reactor Hull Heat: " + total;
+
+
+}
+
+function getCard(i, c)
+{
+
+  if( i !== 0 )
+  {
+    up = grid[i-1][c];
+  }
+  else
+  {
+    up = null;
+  }
+  if( i !== 5 )
+  {
+    down = grid[i+1][c];
+  }
+  else
+  {
+    down = null;
+  }
+  if( c !== 0 )
+  {
+    left = grid[i][c-1];
+  }
+  else
+  {
+    left = null;
+  }
+  if( c !== 8 )
+  {
+    right = grid[i][c+1];
+  }
+  else
+  {
+    right = null;
+  }
+
+}
+
+
+
+function runCycle()
+{
+
+  var i = 0;
+  var c = 0;
+  var up, down, left, right;
+  var cooling = 0;
+  var partHeat = 0;
+  var type = 0;
+  var divHeat = 0;
+  var lHeat = 0;
+
+  for( i = 0; i < 6; i++ )
+  {
+    for( c = 0; c < 9; c++ )
+    {
+
+      current = grid[i][c];
+      if( current.canReflect && current.part !== "weakReflect" && current.part !== "reflect" && current.part !== "unbreakReflect")
+      {
+
+        type = setPartPulses(current);
+        getCard(i, c);
+        if(up.canCool)
+          cooling++;
+        if(down.canCool)
+          cooling++;
+        if(left.canCool)
+          cooling++;
+        if(right.canCool)
+          cooling++;
+
+        if( current.part !== "singleThor" || current.part !== "dualThor" || current.part != "quadThor")
+        {
+
+          partHeat = ((current.pulses / type) * ((current.pulses / type) + 1) * 2) * type;
+
+        }
+        else
+        {
+
+          partHeat = (((current.pulses / type) * ((current.pulses / type) + 1) * 2) * type) / 4;
+
+        }
+
+        divHeat = Math.trunc(partHeat / cooling);
+        lHeat = partHeat - divHeat;
+
+        if(up !== null && up.canCool)
+        {
+          up.heat += divHeat;
+          partHeat -= divHeat;
+        }
+        if(left !== null && left.canCool)
+        {
+          left.heat += divHeat;
+          partHeat -= divHeat;
+        }
+        if(right !== null && right.canCool)
+        {
+          right.heat += divHeat;
+          partHeat -= divHeat;
+        }
+        if(down !== null && down.canCool)
+        {
+          down.heat += divHeat;
+          partHeat -= divHeat;          
+        }
+
+
+      }
+
+
+    }
+
+
+
+  }
+
+
 
 
 
 }
+
+
+function simulate()
+{
+
+  calcHP();
+  calcMaxHeat();
+
+  var iter = 0;
+
+  while( reactor.currentHeat < reactor.maxHeat || iter < 20000 )
+  {
+
+    runCycle();
+
+
+
+  }
+
+
+}
+
+function setPartPulses(p)
+{
+
+  var type = 0;
+  var total = 0;
+  var i, c;
+  i = parseInt(p.loc.charAt(0));
+  c = parseInt(p.loc.charAt(1));
+
+  switch( p.part )
+  {
+    case "singleU": case "singleMOX": case "singleThor":
+      type = 1;
+      total += 1;
+      break;
+    case "dualU": case "dualMOX": case "quadThor":
+      total += 2;
+      p.pulses = 4;
+      break;
+    case "quadU": case "quadMOX": case "quadThor":
+      type = 4;
+      total += 12;
+      break;
+    }
+
+    getCard(i, c);
+
+    if( up !== null )
+      if( up.canReflect )
+        total += type;
+    if( down !== null )
+      if( down.canReflect )
+        total += type;
+    if( right !== null )
+      if( right.canReflect )
+        total += type;
+    if( left !== null )
+      if( left.canReflect )
+        total += type;
+
+        p.pulses = total;
+
+        return type;
+
+}
+
+
 
 function calcHP()
 {
@@ -109,70 +348,7 @@ function calcHP()
       if( current.canReflect && current.part !== "weakReflect" && current.part !== "reflect" && current.part !== "unbreakReflect")
       {
 
-      switch( current.part )
-      {
-        case "singleU": case "singleMOX": case "singleThor":
-          type = 1;
-          current.pulses += 1;
-          break;
-        case "dualU": case "dualMOX": case "quadThor":
-          type = 2;
-          current.pulses += 4;
-          break;
-        case "quadU": case "quadMOX": case "quadThor":
-          type = 4;
-          current.pulses += 12;
-          break;
-
-    }
-
-
-    if( i !== 0 )
-    {
-      up = grid[i-1][c];
-    }
-    else
-    {
-      up = null;
-    }
-    if( i !== 5 )
-    {
-      down = grid[i+1][c];
-    }
-    else
-    {
-      down = null;
-    }
-    if( c !== 0 )
-    {
-      left = grid[i][c-1];
-    }
-    else
-    {
-      left = null;
-    }
-    if( c !== 8 )
-    {
-      right = grid[i][c+1];
-    }
-    else
-    {
-      right = null;
-    }
-
-    if( up !== null )
-      if( up.canReflect )
-        current.pulses += type;
-    if( down !== null )
-      if( down.canReflect )
-        current.pulses += type;
-    if( right !== null )
-      if( right.canReflect )
-        current.pulses += type;
-    if( left !== null )
-      if( left.canReflect )
-        current.pulses += type;
-
+        type = setPartPulses(current);
 
     switch(current.part)
     {
@@ -190,7 +366,7 @@ function calcHP()
         break;
 
         }
-        current.pulses = 0;
+
       }
     }
   }
@@ -246,6 +422,11 @@ function setPart(slot)
             place.canReflect = false;
           if( getId(slot).childNodes[0] !== null )
             getId(slot).removeChild(getId(slot).childNodes[0]);
+          if( vents.includes(selectorGrid.id) )
+          {
+            place.dur = 1000;
+            place.canCool = true;
+          }
 
           var pic = "assets/" + selectorGrid.id + ".png";
 
