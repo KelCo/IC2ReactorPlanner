@@ -190,6 +190,7 @@ function calcHP()
         break;
 
         }
+        current.pulses = 0;
       }
     }
   }
