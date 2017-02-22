@@ -33,6 +33,18 @@ class Selectors
   }
 }
 
+class Reactor
+{
+
+  constructor()
+  {
+    this.maxHeat = 10000;
+    this.currentHeat = 0;
+  }
+
+}
+
+
 
 function onLoad()
 {
@@ -46,6 +58,7 @@ function onLoad()
 
   var i = 0;
   var a = 0;
+  var loca;
 
   selectorGrid = new Selectors();
   grid = [1, 2, 3, 4, 5, 6];
@@ -55,9 +68,12 @@ function onLoad()
     grid[i] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
     for( a = 0; a < 9; a++ )
     {
-      grid[i][a] = new Slot("blank");
+      loca = "" + i + a;
+      grid[i][a] = new Slot("blank", loca);
     }
   }
+
+  reactor = new Reactor();
 
   validReflect = ["singleU", "dualU", "quadU", "singleMOX", "dualMOX", "quadMOX", "weakReflect", "reflect", "singleThor", "dualThor", "quadThor", "unbreakReflect"];
 
@@ -85,50 +101,72 @@ function select(name)
 
 }
 
+function calcMaxHeat()
+{
+
+  var i, c;
+  var total = 10000;
+
+  for( i = 0; i < 9; i++ )
+  {
+    for( c = 0; c < 6; c++ )
+    {
+      current = grid[i][c];
+      switch(current.part)
+      {
+        case "plate":
+          total += 1000;
+          break;
+        case "heatPlate":
+          total += 1700;
+          break;
+        case "xpPlate":
+          total += 500;
+          break;
+      }
+    }
+  }
+
+  reactor.maxHeat = total;
+
+}
+
+
 function simulate()
 {
 
   calcHP();
-
+  calcMaxHeat();
 
 
 }
 
-function calcHP()
+function setPartPulses(p)
 {
 
-  var i, c, current, down, up, left, right, type;
-  var h = 0;
-  var p = 0;
+  var type = 0;
+  var total = 0;
+  var i, c;
+  i = parseInt(p.loc.charAt(0));
+  c = parseInt(p.loc.charAt(1));
 
-  for(i = 0; i < 6; i++)
+
+
+  switch( p.part )
   {
-
-    for(c = 0; c < 9; c++)
-    {
-
-      current = grid[i][c];
-      //console.log(current);
-      if( current.canReflect && current.part !== "weakReflect" && current.part !== "reflect" && current.part !== "unbreakReflect")
-      {
-
-      switch( current.part )
-      {
-        case "singleU": case "singleMOX": case "singleThor":
-          type = 1;
-          current.pulses += 1;
-          break;
-        case "dualU": case "dualMOX": case "quadThor":
-          type = 2;
-          current.pulses += 4;
-          break;
-        case "quadU": case "quadMOX": case "quadThor":
-          type = 4;
-          current.pulses += 12;
-          break;
-
+    case "singleU": case "singleMOX": case "singleThor":
+      type = 1;
+      total += 1;
+      break;
+    case "dualU": case "dualMOX": case "quadThor":
+      total += 2;
+      p.pulses = 4;
+      break;
+    case "quadU": case "quadMOX": case "quadThor":
+      type = 4;
+      total += 12;
+      break;
     }
-
 
     if( i !== 0 )
     {
@@ -165,17 +203,44 @@ function calcHP()
 
     if( up !== null )
       if( up.canReflect )
-        current.pulses += type;
+        total += type;
     if( down !== null )
       if( down.canReflect )
-        current.pulses += type;
+        total += type;
     if( right !== null )
       if( right.canReflect )
-        current.pulses += type;
+        total += type;
     if( left !== null )
       if( left.canReflect )
-        current.pulses += type;
+        total += type;
 
+        p.pulses = total;
+
+        return type;
+
+}
+
+
+
+function calcHP()
+{
+
+  var i, c, current, down, up, left, right, type;
+  var h = 0;
+  var p = 0;
+
+  for(i = 0; i < 6; i++)
+  {
+
+    for(c = 0; c < 9; c++)
+    {
+
+      current = grid[i][c];
+      //console.log(current);
+      if( current.canReflect && current.part !== "weakReflect" && current.part !== "reflect" && current.part !== "unbreakReflect")
+      {
+
+        type = setPartPulses(current);
 
     switch(current.part)
     {
@@ -193,6 +258,7 @@ function calcHP()
         break;
 
         }
+
       }
     }
   }
