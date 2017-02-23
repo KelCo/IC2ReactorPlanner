@@ -20,6 +20,7 @@ class Slot
     this.dur = 0;
     this.canCool = false;
     this.maxCooling = 0;
+    this.broke = false;
   }
 
 }
@@ -552,6 +553,32 @@ function cooling()
           leftoverHeat = heat%coolPart;
           spreadHeat(coolPart, heat);
         }
+        if(vents.includes(current.part))
+        {
+          switch(current.part)
+          {
+            case "vent":
+              current.dur += 6 + (4 * componentHeatBuff(current, i, c));
+              ventCheck(current);
+              break;
+            case "diaVent":
+              current.dur += 12 + (4 * componentHeatBuff(current, i, c));
+              ventCheck(current);
+              break;
+            case "coreVent":
+              reactor.currentHeat -= 5;
+              reactorHeatReset();
+              current.dur += 5 + (4 * componentHeatBuff(current, i, c));
+              ventCheck(current);
+              break;
+            case "goldVent":
+              reactor.currentHeat -= 36;
+              reactorHeatReset();
+              current.dur += 20 + (4 * componentHeatBuff(current, i, c));
+              ventCheck(current);
+              break;
+          }
+        }
       }
     }
   }
@@ -578,39 +605,71 @@ function findCoolPart(i, c)
   coolPart = 0;
   getCard(i, c);
   if(up !== null)
-    if(up.canCool)
+    if(up.canCool && !up.broke )
       coolPart += 1;
   if(down !== null)
-    if(down.canCool)
+    if(down.canCool && !down.broke)
       coolPart +=1;
   if(left !== null)
-    if(left.canCool)
+    if(left.canCool && !left.broke)
       coolPart += 1;
   if(right !== null)
-    if(right.canCool)
+    if(right.canCool && !right.broke)
       coolPart +=1;
   return coolPart;
 }
 function spreadHeat(coolPart, heat)
 {
   if(up !== null)
-    if(up.canCool)
+    if(up.canCool && !up.broke)
       up.dur -= partHeat;
   if(down !== null)
-    if(down.canCool)
+    if(down.canCool && !down.broke)
       down.dur -= partHeat;
   if(left !== null)
-    if(left.canCool)
+    if(left.canCool && !left.broke)
       left.dur -= partHeat;
   if(right !== null)
-    if(right.canCool)
+    if(right.canCool && !right.broke)
       right.dur -= partHeat;
   if(down !== null)
-    if(down.canCool)
+    if(down.canCool && !down.broke)
       down.dur -= leftoverHeat;
         if(up !== null)
-          if(up.canCool)
+          if(up.canCool && !up.broke)
             up.dur -= leftoverHeat;
   if(coolPart === 0)
     reactor.currentHeat += heat;
+}
+function ventCheck(current)
+{
+  if(current.dur > 1000)
+    current.dur = 1000;
+  if(current.dur <= 0)
+    current.broke = true;
+}
+function reactorHeatReset()
+{
+  if(reactor.currentHeat < 0)
+  {
+    reactor.currentHeat = 0;
+  }
+}
+function componentHeatBuff(current, i, c)
+{
+  var ventCounter = 0;
+  getCard(i, c);
+  if(up !== null)
+    if(up.part == "spreadVent")
+      ventCounter++;
+  if(up !== null)
+    if(down.part == "spreadVent")
+      ventCounter++;
+  if(up !== null)
+    if(left.part == "spreadVent")
+      ventCounter++;
+  if(up !== null)
+    if(right.part == "spreadVent")
+      ventCounter++;
+  return ventCounter;
 }
