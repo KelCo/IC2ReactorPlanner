@@ -21,6 +21,7 @@ class Slot
     this.canCool = false;
     this.maxCooling = 0;
     this.broke = false;
+    this.maxHeat = 0;
   }
 
 }
@@ -187,108 +188,12 @@ function getCard(i, c)
 
 
 
-function runCycle()
-{
-
-  var i = 0;
-  var c = 0;
-  var up, down, left, right;
-  var cooling = 0;
-  var partHeat = 0;
-  var type = 0;
-  var divHeat = 0;
-  var lHeat = 0;
-
-  for( i = 0; i < 6; i++ )
-  {
-    for( c = 0; c < 9; c++ )
-    {
-
-      current = grid[i][c];
-      if( current.canReflect && current.part !== "weakReflect" && current.part !== "reflect" && current.part !== "unbreakReflect")
-      {
-
-        type = setPartPulses(current);
-        getCard(i, c);
-        if(up.canCool)
-          cooling++;
-        if(down.canCool)
-          cooling++;
-        if(left.canCool)
-          cooling++;
-        if(right.canCool)
-          cooling++;
-
-        if( current.part !== "singleThor" || current.part !== "dualThor" || current.part != "quadThor")
-        {
-
-          partHeat = ((current.pulses / type) * ((current.pulses / type) + 1) * 2) * type;
-
-        }
-        else
-        {
-
-          partHeat = (((current.pulses / type) * ((current.pulses / type) + 1) * 2) * type) / 4;
-
-        }
-
-        divHeat = Math.trunc(partHeat / cooling);
-        lHeat = partHeat - divHeat;
-
-        if(up !== null && up.canCool)
-        {
-          up.heat += divHeat;
-          partHeat -= divHeat;
-        }
-        if(left !== null && left.canCool)
-        {
-          left.heat += divHeat;
-          partHeat -= divHeat;
-        }
-        if(right !== null && right.canCool)
-        {
-          right.heat += divHeat;
-          partHeat -= divHeat;
-        }
-        if(down !== null && down.canCool)
-        {
-          down.heat += divHeat;
-          partHeat -= divHeat;
-        }
-
-
-      }
-
-
-    }
-
-
-
-  }
-
-
-
-
-
-}
-
-
 function simulate()
 {
 
   calcHP();
   calcMaxHeat();
-
-  var iter = 0;
-
-  while( reactor.currentHeat < reactor.maxHeat || iter < 20000 )
-  {
-
-    runCycle();
-
-
-
-  }
+  run();
 
 
 }
@@ -432,6 +337,7 @@ function setPart(slot)
           if( vents.includes(selectorGrid.id) )
           {
             place.dur = 1000;
+            place.maxHeat = 1000;
             place.canCool = true;
             switch(selectorGrid.id)
             {
@@ -472,6 +378,7 @@ function setPart(slot)
           if(vents.includes(selectorGrid.id))
           {
             place.dur = 1000;
+            place.maxHeat = 1000;
           }
           var pic = "assets/" + selectorGrid.id + ".png";
 
@@ -485,10 +392,12 @@ function setPart(slot)
           place.part = selectorGrid.id;
 
 }
-function cooling()
+function run()
 {
   var i, c, current, type, heat, partHeat, leftoverHeat, percentUp, percentDown, percentLeft, percentRight, reactorPercent;
   var coolPart;
+  var percents, partPercents, reactorPercent, avg;
+
   while(checkFuel())
   {
     for(i = 0; i < 6; i++)
@@ -584,18 +493,26 @@ function cooling()
           switch(current.part)
           {
             case "heatSwitch":
-              findPartPercent(current, i, c, percentUp, percentDown, percentLeft, percentRight);
-              findReactorPercent(reactorPercent);
+              percents = findPartPercent(current, i, c, percentUp, percentDown, percentLeft, percentRight);
+              reactorPercent = findReactorPercent(reactorPercent);
+              partPercents = currentPercent(current);
+              avg = getAvg(percents, partPercents, reactorPercent, "oi");
               break;
             case "diaSwitch":
-              findPartPercent(current, i, c, percentUp, percentDown, percentLeft, percentRight);
-              findReactorPercent(reactorPercent);
+              percents = findPartPercent(current, i, c, percentUp, percentDown, percentLeft, percentRight);
+              reactorPercent = findReactorPercent(reactorPercent);
+              partPercents = currentPercent(current);
+              avg = getAvg(percents, partPercents, reactorPercent, "oi");
               break;
             case "spreadSwitch":
-              findPartPercent(current, i, c, percentUp, percentDown, percentLeft, percentRight);
+              percents = findPartPercent(current, i, c, percentUp, percentDown, percentLeft, percentRight);
+              partPercents = currentPercent(current);
+              avg = getAvg(percents, partPercents, "welp", "part");
               break;
             case "coreSwitch":
-              findReactorPercent(reactorPercent);
+              reactorPercent = findReactorPercent(reactorPercent);
+              partPercents = currentPercent(current);
+              avg = getAvg("hmm", "partPercents", "reactorPercent", "core");
               break;
           }
         }
@@ -604,6 +521,39 @@ function cooling()
   }
 
 }
+
+function getAvg(card, current, r, type)
+{
+  if(type !== "core")
+  {
+  var n = card[0];
+  var s = card[1];
+  var w = card[2];
+  var e = card[3];
+  return (n + s + w + e + r + current) / 6;
+  }
+  else if(type === "part")
+  {
+    var n = card[0];
+    var s = card[1];
+    var w = card[2];
+    var e = card[3];
+    return (n + s + w + e + current) / 5;
+  }
+  else
+  {
+    return (r + current) / 2;
+  }
+}
+
+
+function currentPercent(current)
+{
+
+  return (current.dur / current.maxHeat) * 100;
+
+}
+
 function checkFuel()
 {
   var i, c, current;
