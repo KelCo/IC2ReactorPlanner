@@ -435,16 +435,16 @@ function setPart(slot)
             place.canCool = true;
             switch(selectorGrid.id)
             {
-              case vent:
+              case "vent":
                 place.maxCooling = 6;
                 break;
-              case diaVent:
+              case "diaVent":
                 place.maxCooling = 12;
                 break;
-              case coreVent:
+              case "coreVent":
                 place.maxCooling = 5;
                 break;
-              case goldVent:
+              case "goldVent":
                 place.maxCooling = 20;
                 break;
             }
@@ -487,7 +487,7 @@ function setPart(slot)
 }
 function cooling()
 {
-  var i, c, current, type, heat, partHeat, leftoverHeat;
+  var i, c, current, type, heat, partHeat, leftoverHeat, percentUp, percentDown, percentLeft, percentRight, reactorPercent;
   var coolPart;
   while(checkFuel())
   {
@@ -576,6 +576,26 @@ function cooling()
               reactorHeatReset();
               current.dur += 20 + (4 * componentHeatBuff(current, i, c));
               ventCheck(current);
+              break;
+          }
+        }
+        if(switches.includes(current.part))
+        {
+          switch(current.part)
+          {
+            case "heatSwitch":
+              findPartPercent(current, i, c, percentUp, percentDown, percentLeft, percentRight);
+              findReactorPercent(reactorPercent);
+              break;
+            case "diaSwitch":
+              findPartPercent(current, i, c, percentUp, percentDown, percentLeft, percentRight);
+              findReactorPercent(reactorPercent);
+              break;
+            case "spreadSwitch":
+              findPartPercent(current, i, c, percentUp, percentDown, percentLeft, percentRight);
+              break;
+            case "coreSwitch":
+              findReactorPercent(reactorPercent);
               break;
           }
         }
@@ -672,4 +692,158 @@ function componentHeatBuff(current, i, c)
     if(right.part == "spreadVent")
       ventCounter++;
   return ventCounter;
+}
+function findPartPercent(current, i, c, percentUp, percentDown, percentLeft, percentRight)
+{
+  getCard(i, c);
+  if(up !== null && up.canCool)
+    {
+      switch(current.part)
+      {
+        case vents.includes(current.part):
+          percentUp = (current.dur/1000) * 100;
+          break;
+        case "heatSwitch":
+          percentUp = (current.dur/2500) * 100;
+          break;
+        case "diaSwitch": case "singleWater":
+          percentUp = (current.dur/10000) * 100;
+          break;
+        case "coreSwitch": case "spreadSwitch":
+          percentUp = (current.dur/5000) * 100;
+          break;
+        case "dualWater":
+          percentUp = (current.dur/30000) * 100;
+          break;
+        case "quadWater": case "singleHelium": case "singleNak":
+          percentUp = (current.dur/60000) * 100;
+          break;
+        case "cond":
+          percentUp = (current.dur/20000) * 100;
+          break;
+        case "lapCond":
+          percentUp = (current.dur/100000) * 100;
+          break;
+        case "dualHelium": case "dualNak":
+          percentUp = (current.dur/180000) * 100;
+          break;
+        case "quadHelium": case "quadNak":
+          percentUp = (current.dur/360000) * 100;
+          break;
+      }
+    }
+    if(down !== null && down.canCool)
+      {
+        switch(current.part)
+        {
+          case vents.includes(current.part):
+            percentDown = (current.dur/1000) * 100;
+            break;
+          case "heatSwitch":
+            percentDown = (current.dur/2500) * 100;
+            break;
+          case "diaSwitch": case "singleWater":
+            percentDown = (current.dur/10000) * 100;
+            break;
+          case "coreSwitch": case "spreadSwitch":
+            percentDown = (current.dur/5000) * 100;
+            break;
+          case "dualWater":
+            percentDown = (current.dur/30000) * 100;
+            break;
+          case "quadWater": case "singleHelium": case "singleNak":
+            percentDown = (current.dur/60000) * 100;
+            break;
+          case "cond":
+            percentDown = (current.dur/20000) * 100;
+            break;
+          case "lapCond":
+            percentDown = (current.dur/100000) * 100;
+            break;
+          case "dualHelium": case "dualNak":
+            percentDown = (current.dur/180000) * 100;
+            break;
+          case "quadHelium": case "quadNak":
+            percentDown = (current.dur/360000) * 100;
+            break;
+        }
+      }
+      if(left !== null && left.canCool)
+        {
+          switch(current.part)
+          {
+            case vents.includes(current.part):
+              percentLeft = (current.dur/1000) * 100;
+              break;
+            case "heatSwitch":
+              percentLeft = (current.dur/2500) * 100;
+              break;
+            case "diaSwitch": case "singleWater":
+              percentLeft = (current.dur/10000) * 100;
+              break;
+            case "coreSwitch": case "spreadSwitch":
+              percentLeft = (current.dur/5000) * 100;
+              break;
+            case "dualWater":
+              percentLeft = (current.dur/30000) * 100;
+              break;
+            case "quadWater": case "singleHelium": case "singleNak":
+              percentLeft = (current.dur/60000) * 100;
+              break;
+            case "cond":
+              percentLeft = (current.dur/20000) * 100;
+              break;
+            case "lapCond":
+              percentLeft = (current.dur/100000) * 100;
+              break;
+            case "dualHelium": case "dualNak":
+              percentLeft = (current.dur/180000) * 100;
+              break;
+            case "quadHelium": case "quadNak":
+              percentLeft = (current.dur/360000) * 100;
+              break;
+          }
+        }
+        if(right !== null && right.canCool)
+          {
+            switch(current.part)
+            {
+              case vents.includes(current.part):
+                percentRight = (current.dur/1000) * 100;
+                break;
+              case "heatSwitch":
+                percentRight = (current.dur/2500) * 100;
+                break;
+              case "diaSwitch": case "singleWater":
+                percentRight = (current.dur/10000) * 100;
+                break;
+              case "coreSwitch": case "spreadSwitch":
+                percentRight = (current.dur/5000) * 100;
+                break;
+              case "dualWater":
+                percentRight = (current.dur/30000) * 100;
+                break;
+              case "quadWater": case "singleHelium": case "singleNak":
+                percentRight = (current.dur/60000) * 100;
+                break;
+              case "cond":
+                percentRight = (current.dur/20000) * 100;
+                break;
+              case "lapCond":
+                percentRight = (current.dur/100000) * 100;
+                break;
+              case "dualHelium": case "dualNak":
+                percentRight = (current.dur/180000) * 100;
+                break;
+              case "quadHelium": case "quadNak":
+                percentRight = (current.dur/360000) * 100;
+                break;
+            }
+          }
+  return [percentUp, percentDown, percentLeft, percentRight];
+}
+function findReactorPercent(reactorPercent)
+{
+  reactorPercent = (reactor.currentHeat/reactor.maxHeat) * 100;
+  return reactorPercent;
 }
